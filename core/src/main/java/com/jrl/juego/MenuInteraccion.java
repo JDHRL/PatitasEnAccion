@@ -1,5 +1,7 @@
 package com.jrl.juego;
+
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -10,9 +12,12 @@ import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.Touchable;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
-import com.badlogic.gdx.scenes.scene2d.utils.DragAndDrop;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+import com.badlogic.gdx.scenes.scene2d.ui.ProgressBar;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
+
+import java.io.IOException;
 
 public class MenuInteraccion extends BaseScreen {
 
@@ -20,133 +25,144 @@ public class MenuInteraccion extends BaseScreen {
     private Texture fondoTexture;
     private Image fondoImage;
 
-    // Texturas para la animación del animal
     private Texture animalOjosAbiertosTexture;
     private Texture animalOjosCerradosTexture;
 
-    // Animaciones del animal
     private Animation<TextureRegion> animalAnimacion;
     private float stateTime;
 
-    private Image animalButton;  // Botón para el animal (perro o gato)
-    private Image energiaButton;  // Botón de imagen para mostrar la energía
-    private Image huesoButton;  // Botón del hueso
-    private Image juegosButton;  // Botón de juegos
+    private Image animalButton;
+    private Image energiaButton;
+    private Image huesoButton;
+    private Image juegosButton;
 
-    private float energia;  // Valor de la energía
+    private float energia;
 
-    // Posiciones iniciales para los botones
     private float huesoPosX = 550;
     private float huesoPosY = 350;
-    private float juegosPosX = 0;  // Posición a la derecha del hueso
+    private float juegosPosX = 0;
     private float juegosPosY = 350;
 
-    // Constructor que recibe la cadena "perro" o "gato"
+    private ProgressBar progressBar;
+    private Skin skin; // Declara la variable skin
+    private DogMoodPredictor predictor;
+    private double predictedMood;
+    private EmotionRecognition emotionRecognition;
     public MenuInteraccion(Principal principal, String tipoAnimal) {
         super(principal);
-
-        // Configurar el stage y el fondo
+        predictor= new DogMoodPredictor();
+        predictor.moodHistory.add(new double[]{9, 1});
+        predictor.moodHistory.add(new double[]{10, 4});
         stage = new Stage(new StretchViewport(800, 600));
         fondoTexture = new Texture(Gdx.files.internal("background.png"));
         fondoImage = new Image(fondoTexture);
         fondoImage.setFillParent(true);
-
-        // Inicializar energía al 100%
+        emotionRecognition = new EmotionRecognition();
+        emotionRecognition.setup();
+        try {
+            saveTextToFile(tipoAnimal, "tipo.txt");
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         energia = 100f;
-
-        // Cargar las texturas según el tipo de animal
-        if (tipoAnimal.equalsIgnoreCase("perro")) {
+        tipoAnimal = tipoAnimal.replaceAll("[\n]", "");
+        if (tipoAnimal.equals("perro")) {
             animalOjosAbiertosTexture = new Texture(Gdx.files.internal("perro/perrito_feliz_despierto.png"));
             animalOjosCerradosTexture = new Texture(Gdx.files.internal("perro/perrito_feliz_durmiendo.png"));
-        } else if (tipoAnimal.equalsIgnoreCase("gato")) {
+        } else if (tipoAnimal.equals("gato")) {
             animalOjosAbiertosTexture = new Texture(Gdx.files.internal("gato/gato_feliz_despierto.png"));
             animalOjosCerradosTexture = new Texture(Gdx.files.internal("gato/gato_feliz_durmiendo.png"));
+            System.out.println("gato");
         }
 
-        // Crear la animación para el animal (abre y cierra los ojos)
         TextureRegion[] animalFrames = new TextureRegion[2];
-        animalFrames[0] = new TextureRegion(animalOjosAbiertosTexture);  // Ojos abiertos
-        animalFrames[1] = new TextureRegion(animalOjosCerradosTexture);  // Ojos cerrados
+        animalFrames[0] = new TextureRegion(animalOjosAbiertosTexture);
+        animalFrames[1] = new TextureRegion(animalOjosCerradosTexture);
 
-        animalAnimacion = new Animation<TextureRegion>(0.5f, animalFrames);  // 0.5 segundos entre cuadros
+        animalAnimacion = new Animation<TextureRegion>(0.5f, animalFrames);
         stateTime = 0f;
 
-        // Crear el botón del animal con la primera imagen (ojos abiertos)
         animalButton = new Image(animalOjosAbiertosTexture);
-        animalButton.setTouchable(Touchable.enabled);  // Hacer que el botón sea interactivo
 
-        // Listener para interactuar con el animal
+        String finalTipoAnimal = tipoAnimal;
         animalButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                // Lógica para la interacción cuando el botón es clicado
-                System.out.println(tipoAnimal + " seleccionado");
+                System.out.println(finalTipoAnimal + " seleccionado");
             }
         });
 
-        // Crear el botón de la energía con el valor inicial de 100%
         energiaButton = new Image(new Texture(Gdx.files.internal("energia/posion_100_porciento.png")));
 
-        // Crear el botón del hueso
         huesoButton = new Image(new Texture(Gdx.files.internal("alimentos/huesito.png")));
         huesoButton.setPosition(huesoPosX, huesoPosY);
         huesoButton.setSize(250, 250);
-
-        // Crear el nuevo botón de juegos
-        juegosButton = new Image(new Texture(Gdx.files.internal("control.png"))); // Cambiar la ruta a tu icono
+        juegosButton = new Image(new Texture(Gdx.files.internal("control.png")));
         juegosButton.setPosition(juegosPosX, juegosPosY);
         juegosButton.setSize(250, 250);
 
-
-
-        // Hacer el botón del hueso interactivo con drag-and-drop
-        DragAndDrop dragAndDrop = new DragAndDrop();
-        dragAndDrop.addSource(new DragAndDrop.Source(huesoButton) {
+        huesoButton.addListener(new ClickListener() {
             @Override
-            public DragAndDrop.Payload dragStart(InputEvent event, float x, float y, int pointer) {
-                DragAndDrop.Payload payload = new DragAndDrop.Payload();
-                payload.setDragActor(huesoButton);  // El actor que arrastramos
-                return payload;
+            public void touchDragged(InputEvent event, float x, float y, int pointer) {
+                huesoButton.moveBy(x - huesoButton.getWidth() / 2, y - huesoButton.getHeight() / 2);
+                super.touchDragged(event, x, y, pointer);
             }
-        });
 
-        dragAndDrop.addTarget(new DragAndDrop.Target(animalButton) {
             @Override
-            public boolean drag(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-                // Detectar si el hueso está sobre el animal
-                if (x >= animalButton.getX() && x <= animalButton.getWidth() && y >= animalButton.getY() && y <= animalButton.getHeight()) {
-                    energia = 100;
-                }
+            public boolean touchDown(InputEvent event, float x, float y, int pointer, int button) {
                 return true;
             }
 
             @Override
-            public void drop(DragAndDrop.Source source, DragAndDrop.Payload payload, float x, float y, int pointer) {
-                // Volver el hueso a su posición original cuando se suelta cerca del animal
+            public void touchUp(InputEvent event, float x, float y, int pointer, int button) {
+                if (isHuesoOverAnimal()) {
+                    energia = 100;
+                }
                 huesoButton.setPosition(huesoPosX, huesoPosY);
             }
         });
 
-        // Usar una tabla para organizar los elementos en pantalla
+        // Cargar la skin desde el archivo JSON
+        skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+
+        // Crear la barra de progreso usando la skin
+        progressBar = new ProgressBar(0, 100, 1, false, skin);
+        progressBar.setValue(energia);
+        progressBar.setWidth(250);
+        progressBar.setHeight(25);
+        progressBar.setPosition(275, 200); // Posición de la barra
+
         Table table = new Table();
         table.setFillParent(true);
         table.center();
 
-        // Añadir el botón de energía encima del animal
         table.add(energiaButton).padBottom(50);
-        table.row();  // Pasar a la siguiente fila
-        table.add(animalButton);
-
-        // Añadir los actores al stage
+        table.row();
+        table.add(animalButton).padBottom(10);
+        table.row();
+        table.add(progressBar).padBottom(50); // Agrega la barra de progreso
 
         stage.addActor(fondoImage);
-        stage.addActor(huesoButton);  // Añadir el botón del hueso al stage
         stage.addActor(juegosButton);
         stage.addActor(table);
+        stage.addActor(huesoButton);
 
-
-        // Establecer el stage como el input processor
         Gdx.input.setInputProcessor(stage);
+    }
+
+    private boolean isHuesoOverAnimal() {
+        float huesoCenterX = huesoButton.getX() + huesoButton.getWidth() / 2;
+        float huesoCenterY = huesoButton.getY() + huesoButton.getHeight() / 2;
+
+        return huesoCenterX > animalButton.getX() &&
+            huesoCenterX < animalButton.getX() + animalButton.getWidth() &&
+            huesoCenterY > animalButton.getY() &&
+            huesoCenterY < animalButton.getY() + animalButton.getHeight();
+    }
+
+    public void saveTextToFile(String text, String fileName) throws IOException {
+        FileHandle fileHandle = Gdx.files.local(fileName);
+        fileHandle.writeString(text, false);
     }
 
     @Override
@@ -156,13 +172,32 @@ public class MenuInteraccion extends BaseScreen {
 
         stateTime += delta;
 
-        // Reducir la energía con el tiempo
-        energia -= delta * 5;  // Reducir 5 unidades de energía por segundo
+        energia -= delta * 5;
         if (energia < 0) {
             energia = 0;
         }
 
-        // Actualizar la imagen de la energía según el porcentaje actual
+        // Actualiza la barra de progreso con el valor de energía
+
+        String detectedEmotion = emotionRecognition.captureAndRecognize();
+        int valor=1;
+
+        switch (detectedEmotion.toLowerCase()) {
+            case "enojo":
+                valor = 1;
+                break;
+            case "tristeza":
+                valor = 2;
+                break;
+            case "felicidad":
+                valor = 3;
+                break;
+            case "sorpresa":
+                valor = 4;
+                break;
+            default:
+                 // Salir si la emoción no es válida
+        }
         if (energia > 80) {
             energiaButton.setDrawable(new Image(new Texture(Gdx.files.internal("energia/posion_100_porciento.png"))).getDrawable());
         } else if (energia > 50) {
@@ -172,23 +207,26 @@ public class MenuInteraccion extends BaseScreen {
         } else {
             energiaButton.setDrawable(new Image(new Texture(Gdx.files.internal("energia/posion_10_porciento.png"))).getDrawable());
         }
-        energiaButton.setSize(250,250);
-        energiaButton.setPosition(280,350);
-        // Obtener el cuadro actual de la animación (ojos abiertos o cerrados)
-        TextureRegion currentFrame = animalAnimacion.getKeyFrame(stateTime, true);  // Animación del animal
+        predictedMood = predictor.predictDogMood(energia, valor);
+        progressBar.setValue(Math.round(predictedMood));
+        energiaButton.setSize(250, 250);
+        energiaButton.setPosition(280, 350);
+
+        TextureRegion currentFrame = animalAnimacion.getKeyFrame(stateTime, true);
         animalButton.setDrawable(new Image(currentFrame).getDrawable());
-        // Actualizar el estado del stage y dibujar
+
         stage.act(delta);
         stage.draw();
     }
 
     @Override
     public void dispose() {
-        // Liberar recursos de texturas
         fondoTexture.dispose();
         animalOjosAbiertosTexture.dispose();
         animalOjosCerradosTexture.dispose();
         stage.dispose();
+        skin.dispose(); // Asegúrate de liberar la skin
+        predictor.shutdown();
+        emotionRecognition.videoCapture.release();
     }
 }
-

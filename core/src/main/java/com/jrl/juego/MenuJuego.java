@@ -2,6 +2,7 @@ package com.jrl.juego;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -14,6 +15,9 @@ import com.badlogic.gdx.scenes.scene2d.ui.TextField;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
+
+import java.io.DataOutputStream;
+import java.io.IOException;
 
 public class MenuJuego extends BaseScreen {
     Skin skin;
@@ -90,7 +94,19 @@ public class MenuJuego extends BaseScreen {
         botonStart.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                principal.setScreen(new MenuAdopcion(principal)); // Cambia a MenuAdopcion
+                try {
+                    saveTextToFile(nombreJugador.getText(),"name.txt");
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+
+                FileHandle fileHandle = Gdx.files.local("tipo.txt");
+                String tipo=readTextFile("tipo.txt");
+                if(fileHandle.exists()){
+                    principal.setScreen(new MenuInteraccion(principal,tipo));
+                }else {
+                    principal.setScreen(new MenuAutorizacion(principal)); // Cambia a MenuAdopcion
+                }
             }
         });
 
@@ -106,6 +122,25 @@ public class MenuJuego extends BaseScreen {
 
         // Establecer el input processor
         Gdx.input.setInputProcessor(stage);
+    }
+    public void saveTextToFile(String text, String fileName) throws IOException {
+        // Obtener el FileHandle del archivo en la carpeta local
+        FileHandle fileHandle = Gdx.files.local(fileName);
+
+        // Escribir el texto en el archivo
+        fileHandle.writeString(text, false); // 'false' para sobrescribir el archivo si ya existe
+    }
+    private String readTextFile(String fileName) {
+        // Obtener el FileHandle del archivo
+        FileHandle fileHandle = Gdx.files.local(fileName); // Utiliza 'internal' si está en assets
+
+        // Comprobar si el archivo existe
+        if (!fileHandle.exists()) {
+            return "El archivo no existe: " + fileName;
+        }
+
+        // Leer el contenido del archivo y devolverlo como String
+        return fileHandle.readString(); // Devuelve el contenido del archivo como String
     }
 
     @Override

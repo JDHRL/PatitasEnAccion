@@ -21,7 +21,36 @@ android {
                    'META-INF/dependencies.txt', '**/*.gwt.xml']
 			pickFirsts += ['META-INF/LICENSE.txt', 'META-INF/LICENSE', 'META-INF/license.txt', 'META-INF/LGPL2.1',
                      'META-INF/NOTICE.txt', 'META-INF/NOTICE', 'META-INF/notice.txt']
-		}
+      exclude 'META-INF/native-image/windows-x86/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/ios-x86_64/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/linux-x86_64/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/macosx-x86_64/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/windows-x86/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/linux-x86/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/android-x86_64/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/ios-arm64/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/ios-arm64/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/linux-armhf/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/macosx-arm64/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/linux-x86/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/linux-x86/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/linux-armhf/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/windows-x86_64/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/windows-x86_64/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/macosx-arm64/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/linux-ppc64le/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/android-x86_64/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/linux-ppc64le/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/linux-arm64/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/linux-x86_64/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/linux-arm64/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/android-arm64/jnijavacpp/reflect-config.json'
+      exclude 'META-INF/native-image/ios-x86_64/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/android-arm64/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/macosx-x86_64/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/android-x86/jnijavacpp/jni-config.json'
+      exclude 'META-INF/native-image/android-arm/jnijavacpp/reflect-config.json'
+    }
   }
   defaultConfig {
     applicationId 'com.jrl.juego'
@@ -55,7 +84,7 @@ dependencies {
   coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
   implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
   implementation project(':core')
-
+  //implementation("org.bytedeco:javacv-platform:1.5.10")
   natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"
   natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-armeabi-v7a"
   natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-x86"

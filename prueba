@@ -1,0 +1,19 @@
+    private DogMoodPredictor predictor;
+predictor= new DogMoodPredictor();
+        predictor.moodHistory.add(new double[]{9, 1});
+        predictor.moodHistory.add(new double[]{10, 4});
+        // Simulamos el estado de ánimo y las emociones del usuario a lo largo del tiempo
+        int numberOfPredictions = 5;
+
+        for (int i = 0; i < numberOfPredictions; i++) {
+            double currentDogMood = Math.random() * 100; // Simulación de un ánimo del perro
+            double userEmotion = Math.random() * 4 + 1; // Simulación de emoción del usuario (1 a 4)
+            System.out.println(currentDogMood+"emotion"+userEmotion);
+            // Realizar la predicción
+            double predictedMood = predictor.predictDogMood(currentDogMood, userEmotion);
+            System.out.println("Predicción del ánimo del perro: " + predictedMood);
+        }
+
+        // Cerrar Encog
+        predictor.shutdown();
+        
