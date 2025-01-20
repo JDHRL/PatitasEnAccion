@@ -134,7 +134,8 @@ public class MenuAdopcion extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Lógica cuando el perrito es seleccionado
-                principal.setScreen(new MenuInteraccion(principal,"perro"));
+                principal.setTipo("perro");
+                principal.setScreen(new MenuInteraccion(principal));
             }
         });
 
@@ -154,7 +155,8 @@ public class MenuAdopcion extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Lógica cuando el gatito es seleccionado
-                principal.setScreen(new MenuInteraccion(principal,"gato"));
+                principal.setTipo("gato");
+                principal.setScreen(new MenuInteraccion(principal));
             }
         });
 

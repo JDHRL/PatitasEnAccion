@@ -1,20 +1,23 @@
 package com.jrl.juego;
 
-import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
-import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.jrl.juego.entidades.Jugador;
 
 /** {@link com.badlogic.gdx.ApplicationListener} implementation shared by all platforms. */
 public class Principal extends Game {
     private SpriteBatch batch;
     private Texture image;
     private Music musica;
+    private String tipo;
+    private Jugador jugador;
+    public Principal(){
+        jugador=new Jugador();
+    }
     @Override
     public void create() {
         String emotionName = "Tristeza"; // Cambiar según la emoción deseada
@@ -37,15 +40,17 @@ public class Principal extends Game {
 
         }
 */
+        musica = Gdx.audio.newMusic(Gdx.files.internal("musicaDeFondo.mp3")); // Asegúrate de tener este archivo en tu carpeta assets
+        musica.play();
+        musica.setLooping(true);
         FileHandle fileHandle = Gdx.files.local("tipo.txt");
         String tipo=readTextFile("tipo.txt");
         if(!fileHandle.exists()) {
-            setScreen(new MenuJuego(this));
+            setScreen(new MenuJuegoScreen(this));
         }
         else{
-            musica = Gdx.audio.newMusic(Gdx.files.internal("musicaDeFondo.mp3")); // Asegúrate de tener este archivo en tu carpeta assets
-            musica.play();
-            setScreen(new MenuInteraccion(this,tipo));
+            this.setTipo(tipo);
+            setScreen(new MenuInteraccion(this));
         }
 
     }
@@ -61,5 +66,29 @@ public class Principal extends Game {
 
         // Leer el contenido del archivo y devolverlo como String
         return fileHandle.readString(); // Devuelve el contenido del archivo como String
+    }
+
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    public String getTipo() {
+        return tipo;
+    }
+
+    public Music getMusica() {
+        return musica;
+    }
+
+    public void setMusica(Music musica) {
+        this.musica = musica;
+    }
+
+    public void setJugador(Jugador jugador) {
+        this.jugador = jugador;
+    }
+
+    public Jugador getJugador() {
+        return jugador;
     }
 }

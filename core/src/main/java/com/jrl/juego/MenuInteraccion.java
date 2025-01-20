@@ -48,8 +48,10 @@ public class MenuInteraccion extends BaseScreen {
     private DogMoodPredictor predictor;
     private double predictedMood;
     private EmotionRecognition emotionRecognition;
-    public MenuInteraccion(Principal principal, String tipoAnimal) {
+    private String tipoanimal;
+    public MenuInteraccion(Principal principal) {
         super(principal);
+        tipoanimal=principal.getTipo();
         predictor= new DogMoodPredictor();
         predictor.moodHistory.add(new double[]{9, 1});
         predictor.moodHistory.add(new double[]{10, 4});
@@ -60,19 +62,18 @@ public class MenuInteraccion extends BaseScreen {
         emotionRecognition = new EmotionRecognition();
         emotionRecognition.setup();
         try {
-            saveTextToFile(tipoAnimal, "tipo.txt");
+            saveTextToFile(tipoanimal, "tipo.txt");
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
         energia = 100f;
-        tipoAnimal = tipoAnimal.replaceAll("[\n]", "");
-        if (tipoAnimal.equals("perro")) {
+        tipoanimal = tipoanimal.replaceAll("[\n]", "");
+        if (tipoanimal.equals("perro")) {
             animalOjosAbiertosTexture = new Texture(Gdx.files.internal("perro/perrito_feliz_despierto.png"));
             animalOjosCerradosTexture = new Texture(Gdx.files.internal("perro/perrito_feliz_durmiendo.png"));
-        } else if (tipoAnimal.equals("gato")) {
+        } else if (tipoanimal.equals("gato")) {
             animalOjosAbiertosTexture = new Texture(Gdx.files.internal("gato/gato_feliz_despierto.png"));
             animalOjosCerradosTexture = new Texture(Gdx.files.internal("gato/gato_feliz_durmiendo.png"));
-            System.out.println("gato");
         }
 
         TextureRegion[] animalFrames = new TextureRegion[2];
@@ -84,7 +85,7 @@ public class MenuInteraccion extends BaseScreen {
 
         animalButton = new Image(animalOjosAbiertosTexture);
 
-        String finalTipoAnimal = tipoAnimal;
+        String finalTipoAnimal = tipoanimal;
         animalButton.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
@@ -100,7 +101,16 @@ public class MenuInteraccion extends BaseScreen {
         juegosButton = new Image(new Texture(Gdx.files.internal("control.png")));
         juegosButton.setPosition(juegosPosX, juegosPosY);
         juegosButton.setSize(250, 250);
+        juegosButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(InputEvent event, float x, float y) {
+                predictor.shutdown();
+                emotionRecognition.videoCapture.release();
+                principal.setTipo(tipoanimal);
+                principal.setScreen(new MenuJuegosScreen(principal));
 
+            }
+        });
         huesoButton.addListener(new ClickListener() {
             @Override
             public void touchDragged(InputEvent event, float x, float y, int pointer) {
@@ -148,6 +158,7 @@ public class MenuInteraccion extends BaseScreen {
         stage.addActor(huesoButton);
 
         Gdx.input.setInputProcessor(stage);
+        this.tipoanimal=tipoanimal;
     }
 
     private boolean isHuesoOverAnimal() {
@@ -228,5 +239,10 @@ public class MenuInteraccion extends BaseScreen {
         skin.dispose(); // Asegúrate de liberar la skin
         predictor.shutdown();
         emotionRecognition.videoCapture.release();
+    }
+    @Override
+    public void resize(int width, int height) {
+        // Actualizar el viewport para que coincidan las posiciones de entrada
+        stage.getViewport().update(width, height, true);
     }
 }

@@ -111,7 +111,7 @@ public class EmotionRecognition {
         return emotionDetected;
     }
 
-    public static void main(String[] args) {
+    /*public static void main(String[] args) {
         EmotionRecognition emotionRecognition = new EmotionRecognition();
         emotionRecognition.setup();
 
@@ -121,6 +121,6 @@ public class EmotionRecognition {
 
         // Liberar la captura de video
         emotionRecognition.videoCapture.release();
-    }
+    }*/
 }
 
