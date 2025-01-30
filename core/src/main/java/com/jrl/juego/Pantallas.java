@@ -22,7 +22,8 @@ public enum Pantallas{
     VACUNACIONMASCOTA(new PantallaVacunacionScreen()),
     MENUADMINISTRACIONMEDICINA(new MenuMedicinasAdministrarScreen()),
     CARACTERISTICAS_MASCOTA(new CaracteristicasScreen()),
-    CARACTERISTICAS_OBJETO(new PantallaCaracteristicas());
+    CARACTERISTICAS_OBJETO(new PantallaCaracteristicas()),
+    MENUSALIDASCREEN(new MenuSalirScreen());
 
 
     private BaseScreen pantalla;

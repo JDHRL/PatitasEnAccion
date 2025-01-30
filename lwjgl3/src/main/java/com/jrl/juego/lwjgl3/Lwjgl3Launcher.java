@@ -2,10 +2,13 @@ package com.jrl.juego.lwjgl3;
 
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
+import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowAdapter;
+import com.jrl.juego.Pantallas;
 import com.jrl.juego.Principal;
 
 /** Launches the desktop (LWJGL3) application. */
 public class Lwjgl3Launcher {
+   static  Principal principal;
     public static void main(String[] args) {
 
         if (StartupHelper.startNewJvmIfRequired()) return; // This handles macOS support and helps on Windows.
@@ -13,12 +16,20 @@ public class Lwjgl3Launcher {
     }
 
     private static Lwjgl3Application createApplication() {
-        return new Lwjgl3Application(new Principal(), getDefaultConfiguration());
+        principal=new Principal();
+        return new Lwjgl3Application(principal, getDefaultConfiguration());
     }
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("PatitasEnAcccion");
+        configuration.setWindowListener(new Lwjgl3WindowAdapter() {
+            @Override
+            public boolean closeRequested() {
+                principal.setScreen(Pantallas.MENUSALIDASCREEN.getPantalla());
+                return false; // Retorna false para evitar que se cierre
+            }
+        });
         //// Vsync limits the frames per second to what your hardware can display, and helps eliminate
         //// screen tearing. This setting doesn't always work on Linux, so the line after is a safeguard.
         configuration.useVsync(true);

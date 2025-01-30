@@ -62,27 +62,6 @@ public class Principal extends Game {
         }
 
 
-        /*
-        String emotionName = "Tristeza"; // Cambiar según la emoción deseada
-        String dataPath = "./Data"; // Cambia a la ruta donde hayas almacenado Data
-        //EmotionCapture emotionCapture = new EmotionCapture(dataPath);
-
-        // Captura de emociones durante 10 segundos para cada emoción
-        String[] emotions = {"Tristeza", "Enojo", "Felicidad", "Sorpresa"};
-        int duration = 10; // Duración de captura en segundos
-
-        for (String emotion : emotions) {
-            System.out.println("Capturando emociones de: " + emotion);
-            Thread hilo=new Thread() {
-                @Override
-                public void run() {
-                    emotionCapture.captureEmotions("Tristeza");
-                }
-            };
-            hilo.start();
-
-        }
-*/
         musicas=new ArrayList<>();
         Music musicaInteraccion,musicaMenuJuegos,musicatienda;
             musicaInteraccion= Gdx.audio.newMusic(Gdx.files.internal("musicaDeFondo.mp3")); // Asegúrate de tener este archivo en tu carpeta assets

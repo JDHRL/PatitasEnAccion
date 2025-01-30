@@ -6,7 +6,7 @@ public enum Estados {
     SALUDABLE("Saludable",1),
     ENFERMO_PARASITOS("Enfermo de parasitos",2),
     ENFERMO_DE_CLAMIDIA("Enfermo de clamidia",3),
-    ENFERMO_DE_PARMOVIRUS("Enfermo de parmovirus",4),
+    ENFERMO_DE_PARMOVIRUS("Enfermo de parvovirus",4),
     ENFERMO_DE_RABIA("Enfermo de rabia",5);
 
     String estado;
