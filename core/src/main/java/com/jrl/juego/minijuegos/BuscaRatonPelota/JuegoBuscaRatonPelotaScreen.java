@@ -13,19 +13,21 @@ import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.jrl.juego.*;
-import com.jrl.juego.minijuegos.PantallaGanasteMoneda;
+import com.jrl.juego.minijuegos.PantallaGanasteMonedaScreen;
 
 public class JuegoBuscaRatonPelotaScreen extends BaseScreen {
 
-    private final Stage stage;
-    private final Skin skin;
-    private final Table table;
-    private final BitmapFont customFont;
+    private  Stage stage;
+    private  Skin skin;
+    private Table table;
+    private BitmapFont customFont;
     private String tipo;
 
-    public JuegoBuscaRatonPelotaScreen(Principal principal) {
-        super(principal);
-        tipo = principal.getTipo();
+    @Override
+    public void show() {
+        super.show();
+        principal.reproducirMusica(1);
+        tipo = principal.getJugador().getMascota().getTipo();
         stage = new Stage(new StretchViewport(800, 900));
         Gdx.input.setInputProcessor(stage);
 
@@ -66,7 +68,7 @@ public class JuegoBuscaRatonPelotaScreen extends BaseScreen {
         volverButton.addListener(new ClickListener() {
             @Override
             public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-                principal.setScreen(new MenuJuegosScreen(principal)); // Cambia por tu pantalla principal
+                principal.setScreen(Pantallas.MENUJUEGOS.getPantalla()); // Cambia por tu pantalla principal
             }
         });
         table.add(volverButton).padTop(20).center().row();
@@ -135,7 +137,8 @@ public class JuegoBuscaRatonPelotaScreen extends BaseScreen {
         click = new ClickListener() {
             @Override
             public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
-                principal.setScreen(new PantallaGanasteMoneda(principal,1));
+
+                principal.setScreen(new PantallaGanasteMonedaScreen(principal,1));
             }
         };
         objetoButton.addListener(click);

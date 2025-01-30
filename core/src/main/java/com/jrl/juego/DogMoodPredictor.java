@@ -25,12 +25,15 @@ public class DogMoodPredictor {
     LinkedList<double[]> moodHistory; // Almacena el historial de ánimo del perro y emociones
 
     private static final int MAX_HISTORY_SIZE = 5; // Número de estados anteriores a considerar
-    private static final double MAX_INPUT_VALUE = 4.0; // Máximo valor de entrada (emociones)
-    private static final double MAX_OUTPUT_VALUE = 100.0; // Máximo valor de salida (ánimo)
+    private static final double MAX_SALUD_VALUE =100 ;
+    private static final double MAX_ENERGIA_VALUE =100 ;
+    private static final double MAX_VACUNA_VALUE =4 ;
+
+    private static final double MAX_ESTADO_VALUE = 4; // Máximo valor de salida (estado)
 
     // Constructor que crea y entrena la red
     public DogMoodPredictor() {
-        this.network = createElmanNetwork(1, 7, 1); // Cambiar inputNeurons a 2 para incluir userEmotion
+        this.network = createElmanNetwork(3, 4, 1); // Cambiado a 3 entradas
         this.moodHistory = new LinkedList<>();
         // Entrenar la red con datos de entrenamiento iniciales
         trainNetwork(generateTrainingData());
@@ -50,23 +53,23 @@ public class DogMoodPredictor {
     private MLDataSet generateTrainingData() {
         // Aquí irían tus datos de entrenamiento inicial
         double[][] input = {
-            {1}, {4}, {3}, {1}, {2},
-            {4}, {3}, {4}, {2}, {1},{2}
+            {20, 100, 1}, {80, 60, 2}
         };
 
         double[][] output = {
-            {91}, {30}, {10}, {99}, {10},
-            {38}, {19}, {41}, {9}, {98},{9}
+            {1}, {2}
         };
 
         // Normalizar los datos de entrada
         for (int i = 0; i < input.length; i++) {
-            input[i][0] /= MAX_INPUT_VALUE; // Normaliza la emoción del usuario
+            input[i][0] /= MAX_SALUD_VALUE; // Normaliza salud
+            input[i][1] /= MAX_ENERGIA_VALUE; // Normaliza energía
+            input[i][2] /= MAX_VACUNA_VALUE; // Normaliza vacunas
         }
 
         // Normalizar los datos de salida
         for (int i = 0; i < output.length; i++) {
-            output[i][0] /= MAX_OUTPUT_VALUE; // Normaliza el ánimo del perro
+            output[i][0] /= MAX_ESTADO_VALUE; // Normaliza el ánimo del perro
         }
 
         return new BasicMLDataSet(input, output);
@@ -86,34 +89,34 @@ public class DogMoodPredictor {
         int epoch = 0;
         while (!stop.shouldStop()) {
             trainMain.iteration();
-            //System.out.println("Epoch #" + epoch + " Error: " + trainMain.getError());
             epoch++;
         }
     }
 
     // Método para realizar la predicción del ánimo del perro secuencialmente
-    public double predictDogMood(double currentDogMood, double userEmotion) {
+    public double predictDogMood(double salud, double energia, double vacunas) {
         // Agregar el estado actual a la historia
         if (moodHistory.size() >= MAX_HISTORY_SIZE) {
             moodHistory.removeFirst(); // Elimina el más antiguo si se alcanza el tamaño máximo
         }
-        moodHistory.add(new double[]{currentDogMood, userEmotion});
+        moodHistory.add(new double[]{salud, energia, vacunas});
 
         // Preparar los datos de entrada para la predicción
-        double[] input = new double[2];
-        if (moodHistory.size() < 2) {
-            throw new IllegalStateException("Se requieren al menos 2 estados anteriores para realizar una predicción.");
+        double[] input = new double[3];
+        if (moodHistory.size() < 1) {
+            throw new IllegalStateException("Se requiere al menos 1 estado anterior para realizar una predicción.");
         }
 
         // Usar el último estado para la predicción
-        input[0] = moodHistory.getLast()[0] / MAX_OUTPUT_VALUE; // Normaliza el ánimo del perro
-        input[1] = moodHistory.getLast()[1] / MAX_INPUT_VALUE; // Normaliza la emoción del usuario
+        input[0] = moodHistory.getLast()[0] / MAX_SALUD_VALUE; // Normaliza salud
+        input[1] = moodHistory.getLast()[1] / MAX_ENERGIA_VALUE; // Normaliza energía
+        input[2] = moodHistory.getLast()[2] / MAX_VACUNA_VALUE; // Normaliza vacunas
 
         MLData mlData = new BasicMLData(input);
         MLData output = network.compute(mlData);
 
         // Desnormalizar la salida a un valor en el rango original (0-100)
-        return output.getData(0) * MAX_OUTPUT_VALUE;
+        return output.getData(0) * MAX_ESTADO_VALUE;
     }
 
     // Método para cerrar Encog

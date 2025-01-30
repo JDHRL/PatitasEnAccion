@@ -67,7 +67,6 @@ public class PuzzlePiece extends Actor implements Serializable{
 				pantalla.setDraggedPiece(null);
 				pantalla.checkSolved();
 				pantalla.save();
-				System.out.println("piece ma board x a y " + boardX + boardY);
 				super.clicked(event, x, y);
 			}
 		});
@@ -91,11 +90,8 @@ public class PuzzlePiece extends Actor implements Serializable{
 		solvedY = solvedX = false;
 		if (centerX > boardX && centerX < stage.getWidth() - boardX) {
 			if (centerY > boardY && centerY < stage.getHeight() - boardY) {
-				// System.out.println("je na mriezke, ideme prichytit");
 				snapHorizontally();
 				snapVertically();
-				System.out
-						.println("je na spravnom mieste ?" + isOnRightPlace());
 			}
 		} else {
 			setPosition(XpositionInmenu, YpositionInmenu);
@@ -136,8 +132,6 @@ public class PuzzlePiece extends Actor implements Serializable{
 			solvedY = true;
 		else
 			solvedY = false;
-		System.out.println("snap " + (yCoor + 1) + " first "
-				+ (Settings.getPuzzleSize() - textureY));
 	}
 
 	public void setInMenuPosition(float f, float g){

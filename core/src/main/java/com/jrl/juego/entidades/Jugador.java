@@ -1,11 +1,26 @@
 package com.jrl.juego.entidades;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 public class Jugador {
     String name;
     long monedas;
-    int nivel;
-    long puntos;
+    Map<String,Alimento> alimentos;
+    Map<String,Medicina> medicinas;
 
+
+    Animal mascota;
+    public Jugador(){
+        alimentos=new HashMap<>();
+        medicinas=new HashMap<>();
+        mascota=new Animal();
+        monedas=2000;
+        mascota.setSalud(100);
+        mascota.setEnergia(100);
+        mascota.setEstado(Estados.SALUDABLE.toString());
+    }
     public String getName() {
         return name;
     }
@@ -22,19 +37,28 @@ public class Jugador {
         this.monedas = monedas;
     }
 
-    public int getNivel() {
-        return nivel;
+    public Map<String,Alimento> getAlimentos() {
+        return alimentos;
     }
 
-    public void setNivel(int nivel) {
-        this.nivel = nivel;
+    public void setAlimentos(Map<String,Alimento> alimentos) {
+        this.alimentos = alimentos;
     }
 
-    public long getPuntos() {
-        return puntos;
+    public Animal getMascota() {
+        return mascota;
     }
 
-    public void setPuntos(long puntos) {
-        this.puntos = puntos;
+    public void setMascota(Animal mascota) {
+        this.mascota = mascota;
     }
+
+    public Map<String, Medicina> getMedicinas() {
+        return medicinas;
+    }
+
+    public void setMedicinas(Map<String, Medicina> medicinas) {
+        this.medicinas = medicinas;
+    }
+
 }

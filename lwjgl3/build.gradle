@@ -11,6 +11,7 @@ buildscript {
 }
 plugins {
   id "io.github.fourlastor.construo" version "1.4.1"
+  id 'com.github.johnrengelman.shadow' version '7.1.2'
   id "application"
 }
 
@@ -59,6 +60,7 @@ jar {
   dependencies {
     exclude('META-INF/INDEX.LIST', 'META-INF/maven/**')
   }
+
 // setting the manifest makes the JAR runnable.
   manifest {
     attributes 'Main-Class': project.mainClassName
@@ -129,4 +131,8 @@ startScripts.classpath = project.tasks.jar.outputs.files
 
 if(enableGraalNative == 'true') {
   apply from: file("nativeimage.gradle")
+}
+shadowJar {
+  //minimize()  // Reduce el tamaño eliminando clases no utilizadas
+  mergeServiceFiles()
 }

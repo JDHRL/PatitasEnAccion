@@ -1,6 +1,7 @@
 package com.jrl.juego.minijuegos.rompecabezas;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.jrl.juego.minijuegos.rompecabezas.play.PuzzlePiece;
 
 import java.util.ArrayList;
@@ -9,9 +10,11 @@ import java.util.Collections;
 public class PuzzleShuffler {
 	private ArrayList<PuzzlePiece> pieces;
 	private float xOfset = 1;
+    private Stage stage;
 
-	public PuzzleShuffler(ArrayList<PuzzlePiece> pieces) {
+	public PuzzleShuffler(ArrayList<PuzzlePiece> pieces,Stage stage) {
 		this.pieces = pieces;
+        this.stage=stage;
 	}
 
 	public void shuffle() {
@@ -31,14 +34,14 @@ public class PuzzleShuffler {
 
 			if (!putPieceDown) {
 				piece.setPosition(xOfset + currentColumn * piece.getWidth(),
-						Gdx.graphics.getHeight() - Gdx.graphics.getHeight()
+						stage.getHeight() - stage.getHeight()
 								/ Settings.getPuzzleSize() * piecesPut);
 				piece.setInMenuPosition(piece.getX(), piece.getY());
 				if (piecesPut >= Settings.getPuzzleSize()) {
 					currentColumn++;
 					piecesPut = 0;
 					if (currentColumn >= columnsCount / 2) {
-						xOfset = Gdx.graphics.getWidth() - columnsCount * piece.getWidth();
+						xOfset = stage.getWidth() - columnsCount * piece.getWidth();
 					}
 					if (currentColumn >= columnsCount) {
 						putPieceDown = true;

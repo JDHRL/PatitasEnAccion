@@ -1,5 +1,8 @@
 package com.jrl.juego;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
+
 import org.bytedeco.opencv.opencv_core.*;
 import org.bytedeco.opencv.global.opencv_imgproc;
 import org.bytedeco.opencv.global.opencv_imgcodecs;
@@ -17,18 +20,19 @@ public class EmotionCapture {
     public EmotionCapture(String dataPath) {
         this.dataPath = dataPath;
         this.cap = new VideoCapture(0); // Inicializar la captura de video una vez
-        this.faceClassif = new CascadeClassifier("haarcascade_frontalface_default.xml"); // Inicializar el clasificador una vez
+        this.faceClassif = new CascadeClassifier(Gdx.files.local("haarcascade_frontalface_default.xml").file().getAbsolutePath()); // Inicializar el clasificador una vez
     }
 
     public boolean captureEmotions(String emotionName) {
         String emotionsPath = dataPath + "/" + emotionName;
 
         // Crear carpeta para emociones si no existe
-        File emotionsDir = new File(emotionsPath);
+        FileHandle emotionsDir = Gdx.files.local(emotionsPath);
         if (!emotionsDir.exists()) {
-            if (emotionsDir.mkdirs()) {
+            try {
+                emotionsDir.mkdirs(); // Crea la carpeta
                 System.out.println("Carpeta creada: " + emotionsPath);
-            } else {
+            } catch (Exception e) {
                 System.out.println("Error al crear la carpeta: " + emotionsPath);
                 return false;
             }
@@ -43,7 +47,16 @@ public class EmotionCapture {
         Mat resizedFrame = new Mat();
         opencv_imgproc.resize(frame, resizedFrame, new Size(640, 480)); // Redimensiona el frame
         Mat gray = new Mat();
-        opencv_imgproc.cvtColor(resizedFrame, gray, opencv_imgproc.COLOR_BGR2GRAY); // Convierte a escala de grises
+        if (resizedFrame.channels() == 1) {
+            // Convertir de escala de grises a BGR antes de hacer la conversión a escala de grises
+            Mat temp = new Mat();
+            opencv_imgproc.cvtColor(resizedFrame, temp, opencv_imgproc.COLOR_GRAY2BGR);
+            opencv_imgproc.cvtColor(temp, gray, opencv_imgproc.COLOR_BGR2GRAY); // Ahora a escala de grises
+        } else if (resizedFrame.channels() == 3) {
+            opencv_imgproc.cvtColor(resizedFrame, gray, opencv_imgproc.COLOR_BGR2GRAY); // Convierte a escala de grises
+        } else {
+           System.out.println("canales no soportados");
+        }
 
         RectVector faces = new RectVector();
         Size minSize = new Size(30, 30); // Tamaño mínimo de detección

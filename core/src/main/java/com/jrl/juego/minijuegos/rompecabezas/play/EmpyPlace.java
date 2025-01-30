@@ -4,6 +4,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.jrl.juego.minijuegos.rompecabezas.Settings;
 
 public class EmpyPlace extends Actor {
@@ -13,17 +14,17 @@ public class EmpyPlace extends Actor {
 	private Texture texture;
 	private float scretch = .9f;
 
-	public EmpyPlace(int x, int y, Texture image) {
+	public EmpyPlace(int x, int y, Texture image, Stage stage) {
 		texture = image;
-		setSize(Gdx.graphics.getHeight() / (Settings.getPuzzleSize() + 1),
-				Gdx.graphics.getHeight() / (Settings.getPuzzleSize() + 1));
+		setSize(stage.getHeight() / (Settings.getPuzzleSize() + 1),
+				stage.getHeight() / (Settings.getPuzzleSize() + 1));
 
-		boardY = (Gdx.graphics.getHeight() / (Settings.getPuzzleSize() + 1) / 2);
-		boardX = (Gdx.graphics.getWidth() - Gdx.graphics.getHeight()) / 2
+		boardY = ((int)stage.getHeight() / (Settings.getPuzzleSize() + 1) / 2);
+		boardX = (int)(stage.getWidth() - stage.getHeight()) / 2
 				+ boardY;
 
 		setPosition(x * getWidth() + boardX, y * getHeight() + boardY);
-		setY(Gdx.graphics.getHeight() - getY() - 2 * boardY);
+		setY(stage.getHeight() - getY() - 2 * boardY);
 
 	}
 

@@ -8,10 +8,14 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Label.LabelStyle;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
+import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.jrl.juego.BaseScreen;
+import com.jrl.juego.Pantallas;
 import com.jrl.juego.Principal;
+import com.jrl.juego.minijuegos.PantallaGanasteMonedaScreen;
 import com.jrl.juego.minijuegos.rompecabezas.PuzzleShuffler;
 import com.jrl.juego.minijuegos.rompecabezas.Settings;
 import com.jrl.juego.minijuegos.rompecabezas.play.EmpyPlace;
@@ -32,14 +36,12 @@ public class PlayingScreen extends BaseScreen {
     private Label time;
     private TextButton menuButton;
     private BitmapFont font;
-    private Principal principal;
-    public PlayingScreen(Principal principal) {
-        super(principal);
-        this.principal=principal;
-    }
+
+    int minutes=0;
 
     @Override
     public void show() {
+        principal.reproducirMusica(1);
         stage =  new Stage(new StretchViewport(800, 900));;
         if (Settings.getImage() == null) {
             image = new Texture("default.jpeg");
@@ -47,22 +49,29 @@ public class PlayingScreen extends BaseScreen {
         } else {
             image = Settings.getImage();
         }
+        Texture figuras=new Texture("rosado.png");
 
         pieces = new ArrayList<>();
         Gdx.input.setInputProcessor(stage);
-
         for (int i = 0; i < Settings.getPuzzleSize(); i++) {
             for (int j = 0; j < Settings.getPuzzleSize(); j++) {
+                //lugares
+                EmpyPlace ep = new EmpyPlace(i, j, figuras,stage);
+                stage.addActor(ep);
+            }
+        }
+        for (int i = 0; i < Settings.getPuzzleSize(); i++) {
+            for (int j = 0; j < Settings.getPuzzleSize(); j++) {
+
                 PuzzlePiece newPiece = new PuzzlePiece(i, j, image.getWidth() / Settings.getPuzzleSize(), image, this,stage);
                 stage.addActor(newPiece);
                 pieces.add(newPiece);
 
-                EmpyPlace ep = new EmpyPlace(i, j, image);
-                //stage.addActor(ep);
+
             }
         }
 
-        new PuzzleShuffler(pieces).shuffle();
+        new PuzzleShuffler(pieces,stage).shuffle();
         startTime = System.currentTimeMillis();
 
         // Cargar fuente preexportada
@@ -71,10 +80,26 @@ public class PlayingScreen extends BaseScreen {
 
         time = new Label("0:00:00", ls);
         time.setPosition(stage.getWidth() / 2 - time.getWidth() / 2, stage.getHeight() - time.getHeight() * .85f);
+        Skin skin = new Skin(Gdx.files.internal("skin/uskin.json"));
+        BitmapFont customFont = new BitmapFont(Gdx.files.internal("fuente_arial/font-export.fnt"), Gdx.files.internal("fuente_arial/font-export.png"), false);
 
-
+        // Crear estilo de etiqueta con la fuente personalizada
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = customFont;
+        labelStyle.fontColor = Color.WHITE;
+        TextButton volverButton = new TextButton("Menú", skin);
+        volverButton.getLabel().setStyle(labelStyle);
+        volverButton.setSize(100,50);
+        volverButton.addListener(new ClickListener() {
+            @Override
+            public void clicked(com.badlogic.gdx.scenes.scene2d.InputEvent event, float x, float y) {
+                principal.setScreen(Pantallas.MENUJUEGOS.getPantalla()); // Cambia por tu pantalla principal
+            }
+        });
+        volverButton.setPosition(0, stage.getHeight() - volverButton.getHeight() * .85f);
 
         stage.addActor(time);
+        stage.addActor(volverButton);
 
 
     }
@@ -88,7 +113,7 @@ public class PlayingScreen extends BaseScreen {
 
         for (int i = 0; i < Settings.getPuzzleSize(); i++) {
             for (int j = 0; j < Settings.getPuzzleSize(); j++) {
-                EmpyPlace ep = new EmpyPlace(i, j, image);
+                EmpyPlace ep = new EmpyPlace(i, j, image,stage);
                 stage.addActor(ep);
             }
         }
@@ -145,7 +170,21 @@ public class PlayingScreen extends BaseScreen {
             }
         }
         if (allSolved) {
-            //unavez que se resuelva el rompecabezas
+            if(minutes<=12&&Settings.getPuzzleSize()>3) {
+                principal.setScreen(new PantallaGanasteMonedaScreen(principal, 40));
+
+            } else if (minutes<=18&&Settings.getPuzzleSize()>3) {
+                principal.setScreen(new PantallaGanasteMonedaScreen(principal, 30));
+            }
+            else if (minutes<=29&&Settings.getPuzzleSize()>3) {
+                principal.setScreen(new PantallaGanasteMonedaScreen(principal, 20));
+            }
+            else if (minutes<=6) {
+                principal.setScreen(new PantallaGanasteMonedaScreen(principal, 10));
+            }
+            else{
+                principal.setScreen(new PantallaGanasteMonedaScreen(principal, 5));
+            }
         }
     }
 

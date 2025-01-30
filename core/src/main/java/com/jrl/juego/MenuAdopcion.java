@@ -3,7 +3,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
-import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
@@ -52,8 +51,9 @@ public class MenuAdopcion extends BaseScreen {
     private Image boton1;  // Botón para el perrito
     private Image boton2;  // Botón para el gatito
 
-    public MenuAdopcion(Principal principal) {
-        super(principal);
+    @Override
+    public void show() {
+        super.show();
 
         // Configurar el stage y el fondo
         stage = new Stage(new StretchViewport(800, 600));  // Usar StretchViewport para mantener la relación de aspecto
@@ -134,8 +134,8 @@ public class MenuAdopcion extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Lógica cuando el perrito es seleccionado
-                principal.setTipo("perro");
-                principal.setScreen(new MenuInteraccion(principal));
+                principal.getJugador().getMascota().setTipo("perro");
+                principal.setScreen(Pantallas.MENUINTERACCION.getPantalla());
             }
         });
 
@@ -155,8 +155,8 @@ public class MenuAdopcion extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Lógica cuando el gatito es seleccionado
-                principal.setTipo("gato");
-                principal.setScreen(new MenuInteraccion(principal));
+                principal.getJugador().getMascota().setTipo("gato");
+                principal.setScreen(Pantallas.MENUINTERACCION.getPantalla());
             }
         });
 
@@ -175,6 +175,7 @@ public class MenuAdopcion extends BaseScreen {
 
         // Establecer el stage como el input processor
         Gdx.input.setInputProcessor(stage);
+
     }
 
     @Override

@@ -1,18 +1,18 @@
 package com.jrl.juego;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
 import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
-import com.jrl.juego.minijuegos.BuscaRatonPelota.JuegoBuscaRatonPelotaScreen;
 import com.jrl.juego.minijuegos.BuscaRatonPelota.PantallaJuego;
-import com.jrl.juego.minijuegos.rompecabezas.screens.PlayingScreen;
+import com.jrl.juego.minijuegos.rompecabezas.screens.NivelesRompeCabezas;
 
 public class MenuJuegosScreen extends BaseScreen {
 
@@ -22,28 +22,40 @@ public class MenuJuegosScreen extends BaseScreen {
     private ScrollPane scrollPane;
     private Skin skin;
     private String tipoanimal;
-    private Music musica;
-    public MenuJuegosScreen(Principal principal) {
-        super(principal);
-        principal.getMusica().stop();
-        musica = Gdx.audio.newMusic(Gdx.files.internal("music/musicaMenuJuegos.mp3")); // Asegúrate de tener este archivo en tu carpeta assets
-        musica.play();
-        musica.setLooping(true);
-        this.tipoanimal=principal.getTipo();
+    private Label monedasLabel; // Para mostrar las monedas
+    private BitmapFont customFont;
+    @Override
+    public void show() {
+        super.show();
+        principal.reproducirMusica(1);
+        this.tipoanimal = principal.getJugador().getMascota().getTipo();
         stage = new Stage(new StretchViewport(800, 600));
         Gdx.input.setInputProcessor(stage);
 
         // Cargar la skin para UI
         skin = new Skin(Gdx.files.internal("ui/uiskin.json"));
+        customFont = new BitmapFont(Gdx.files.internal("fuente_arial/fuente_con_borde.fnt"), Gdx.files.internal("fuente_arial/fuente_con_borde.png"), false);
 
+        // Crear estilo de etiqueta con la fuente personalizada
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = customFont;
+        labelStyle.fontColor = Color.WHITE;
         // Crear la tabla principal
         mainTable = new Table();
         mainTable.setFillParent(true);
 
-        // Crear el Label superior
-        Label titleLabel = new Label("Minijuegos", skin);
+        // Crear el Label superior con el título "Minijuegos"
+        Label titleLabel = new Label("Minijuegos", labelStyle);
         titleLabel.setFontScale(2);
-        mainTable.add(titleLabel).expandX().left().padLeft(20);
+
+        // Crear el Label de monedas que se actualizará
+        monedasLabel = new Label("Monedas:"+principal.getJugador().getMonedas(), labelStyle); // Valor inicial "0"
+        monedasLabel.setFontScale(1.5f);
+
+        // Agregar los labels a la tabla
+        mainTable.add(titleLabel).expandX().left().padLeft(20); // Título a la izquierda
+        mainTable.add(monedasLabel).expandX().right().padRight(20); // Monedas a la derecha
+        mainTable.row();
 
         // Botón en la esquina superior derecha
         Texture buttonTexture = new Texture(Gdx.files.internal("imagen_boton_casa.png"));
@@ -52,8 +64,8 @@ public class MenuJuegosScreen extends BaseScreen {
 
         button.addListener(event -> {
             if (event.toString().equals("touchDown")) {
-                principal.setTipo(tipoanimal);
-                principal.setScreen(new MenuInteraccion(principal));
+                principal.getJugador().getMascota().setTipo(tipoanimal);
+                principal.setScreen(Pantallas.MENUINTERACCION.getPantalla());
                 return true;
             }
             return false;
@@ -68,21 +80,11 @@ public class MenuJuegosScreen extends BaseScreen {
         gridTable.defaults().pad(10).height(250); // Espacio y tamaño predeterminado
 
         // Llenar la grilla con imágenes de ejemplo
-       /* for (int i = 1; i <= 20; i++) {
-            Texture texture = new Texture(Gdx.files.internal("zona_de_adopcion.png"));
-            Image image = new Image(texture);
-            gridTable.add(image);
-
-            if (i % 3 == 0) {
-                gridTable.row(); // Nueva fila después de 3 elementos
-            }
-        }*/
-
         Image juegoBusqueda = new Image(new Texture(Gdx.files.internal("raton_pelota.jpeg")));
         juegoBusqueda.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                principal.setTipo(tipoanimal);
+                principal.getJugador().getMascota().setTipo(tipoanimal);
                 principal.setScreen(new PantallaJuego(principal));
 
             }
@@ -92,7 +94,7 @@ public class MenuJuegosScreen extends BaseScreen {
         juegoRompecabezas.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
-                principal.setScreen(new PlayingScreen(principal));
+                principal.setScreen(Pantallas.JUEGOROMPECABEZAS.getPantalla());
 
             }
         });
@@ -133,11 +135,5 @@ public class MenuJuegosScreen extends BaseScreen {
         stage.getViewport().update(width, height, true);
     }
 
-    public void setMusica(Music musica) {
-        this.musica = musica;
-    }
 
-    public Music getMusica() {
-        return musica;
-    }
 }

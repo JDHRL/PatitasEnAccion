@@ -1,5 +1,6 @@
 package com.jrl.juego;
 
+import com.badlogic.gdx.Gdx;
 import org.bytedeco.opencv.opencv_core.Mat;
 import org.bytedeco.opencv.opencv_face.FaceRecognizer;
 import org.bytedeco.opencv.opencv_face.LBPHFaceRecognizer;
@@ -22,8 +23,7 @@ public class EmotionRecognition {
 
     public EmotionRecognition() {
         this.emotionRecognizer = LBPHFaceRecognizer.create();
-        this.faceClassifier = new CascadeClassifier("haarcascade_frontalface_default.xml");
-        this.videoCapture = new VideoCapture(0);
+        this.faceClassifier = new CascadeClassifier(Gdx.files.local("haarcascade_frontalface_default.xml").file().getAbsolutePath());
     }
 
     public Mat emotionImage(String emotion) {
@@ -96,18 +96,6 @@ public class EmotionRecognition {
                 break; // Salir del bucle una vez que se detecta una emoción
             }
         }
-
-        // Manejo de excepciones para entrada/salida
-        try {
-            // Presiona 'Esc' para salir
-            if (System.in.available() > 0) {
-                char k = (char) System.in.read();
-                if (k == 27) return "Detención por Esc"; // 27 es el código ASCII para Esc
-            }
-        } catch (IOException e) {
-            System.out.println("Error de entrada/salida: " + e.getMessage());
-        }
-
         return emotionDetected;
     }
 

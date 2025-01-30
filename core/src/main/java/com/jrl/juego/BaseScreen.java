@@ -1,6 +1,10 @@
 package com.jrl.juego;
 
 import com.badlogic.gdx.Screen;
+import com.jrl.juego.entidades.Jugador;
+import com.jrl.juego.guardado.GuardadoObjeto;
+
+import java.io.IOException;
 
 
 /**
@@ -10,9 +14,6 @@ import com.badlogic.gdx.Screen;
 
 public abstract class BaseScreen implements Screen{
     protected Principal principal;
-    public BaseScreen(Principal principal){
-        this.principal=principal;
-    }
 
     @Override
     public void show(){}
@@ -22,7 +23,13 @@ public abstract class BaseScreen implements Screen{
     @Override
     public void resize(int i, int i1){}
     @Override
-    public  void pause() {}
+    public  void pause() {try {
+        GuardadoObjeto<Jugador> guardado;
+        guardado=new GuardadoObjeto<>(Jugador.class);
+        guardado.guardar(principal.getJugador());
+    } catch (IOException e) {
+        throw new RuntimeException(e);
+    }}
 
     @Override
     public void resume(){}
@@ -31,6 +38,20 @@ public abstract class BaseScreen implements Screen{
 
     @Override
     public void dispose() {
+        try {
+            GuardadoObjeto<Jugador> guardado;
+            guardado=new GuardadoObjeto<>(Jugador.class);
+            guardado.guardar(principal.getJugador());
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    public Principal getPrincipal() {
+        return principal;
+    }
+
+    public void setPrincipal(Principal principal) {
+        this.principal = principal;
+    }
 }

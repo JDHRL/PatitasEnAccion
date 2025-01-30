@@ -2,8 +2,10 @@ package com.jrl.juego.minijuegos.rompecabezas.screens;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.*;
@@ -11,9 +13,11 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.jrl.juego.BaseScreen;
-import com.jrl.juego.MenuInteraccion;
+import com.jrl.juego.Pantallas;
 import com.jrl.juego.Principal;
-import com.jrl.juego.minijuegos.BuscaRatonPelota.PantallaJuego;
+import com.jrl.juego.minijuegos.rompecabezas.Settings;
+
+import java.util.ArrayList;
 
 public class NivelesRompeCabezas extends BaseScreen {
 
@@ -22,15 +26,21 @@ public class NivelesRompeCabezas extends BaseScreen {
     private Table gridTable;
     private ScrollPane scrollPane;
     private Skin skin;
-    private String tipoanimal;
-    private Music musica;
-    public NivelesRompeCabezas(Principal principal) {
-        super(principal);
-        principal.getMusica().stop();
-        musica = Gdx.audio.newMusic(Gdx.files.internal("music/musicaMenuJuegos.mp3")); // Asegúrate de tener este archivo en tu carpeta assets
-        musica.play();
-        musica.setLooping(true);
-        this.tipoanimal=principal.getTipo();
+    private BitmapFont fuente;
+    ArrayList<Texture> pantallas;
+    @Override
+    public void show() {
+        super.show();
+        pantallas=new ArrayList<>();
+        pantallas.add(new Texture(Gdx.files.internal("rompecabezas/niño1.jpeg")));
+        pantallas.add(new Texture(Gdx.files.internal("rompecabezas/niño2.jpeg")));
+        pantallas.add(new Texture(Gdx.files.internal("rompecabezas/niño3.jpeg")));
+        pantallas.add(new Texture(Gdx.files.internal("rompecabezas/niño4.jpeg")));
+        pantallas.add(new Texture(Gdx.files.internal("rompecabezas/niño5.jpeg")));
+        pantallas.add(new Texture(Gdx.files.internal("rompecabezas/niño6.jpeg")));
+        pantallas.add(new Texture(Gdx.files.internal("rompecabezas/niño7.jpeg")));
+        pantallas.add(new Texture(Gdx.files.internal("rompecabezas/niño8.jpeg")));
+        pantallas.add(new Texture(Gdx.files.internal("rompecabezas/niño9.jpeg")));
         stage = new Stage(new StretchViewport(800, 600));
         Gdx.input.setInputProcessor(stage);
 
@@ -41,75 +51,58 @@ public class NivelesRompeCabezas extends BaseScreen {
         mainTable = new Table();
         mainTable.setFillParent(true);
 
+        // Cargar la fuente personalizada
+        fuente = new BitmapFont(Gdx.files.internal("fuente_arial/fuente_con_borde.fnt"), Gdx.files.internal("fuente_arial/fuente_con_borde.png"), false);
+
+        // Crear estilo de etiqueta con la fuente personalizada
+        Label.LabelStyle labelStyle = new Label.LabelStyle();
+        labelStyle.font = fuente;
+        labelStyle.fontColor = Color.WHITE;
+
         // Crear el Label superior
-        Label titleLabel = new Label("Minijuegos", skin);
+        Label titleLabel = new Label("Niveles de Rompecabezas", labelStyle);
         titleLabel.setFontScale(2);
-        mainTable.add(titleLabel).expandX().left().padLeft(20);
-
-        // Botón en la esquina superior derecha
-        Texture buttonTexture = new Texture(Gdx.files.internal("imagen_boton_casa.png"));
-        Button button = new Button(new TextureRegionDrawable(buttonTexture));
-        button.setSize(50, 50);
-
-        button.addListener(event -> {
-            if (event.toString().equals("touchDown")) {
-                principal.setTipo(tipoanimal);
-                principal.setScreen(new MenuInteraccion(principal));
-                return true;
-            }
-            return false;
-        });
-
-        // Colocar el botón en la esquina superior derecha
-        mainTable.add(button).padTop(20).padRight(20).size(50, 50).right().top();
+        mainTable.add(titleLabel).expandX().center().pad(20);
         mainTable.row();
 
         // Crear la grilla
         gridTable = new Table();
-        gridTable.defaults().pad(10).height(250); // Espacio y tamaño predeterminado
+        gridTable.defaults().pad(10).size(150, 150); // Tamaño de cada celda
 
-        // Llenar la grilla con imágenes de ejemplo
-       /* for (int i = 1; i <= 20; i++) {
-            Texture texture = new Texture(Gdx.files.internal("zona_de_adopcion.png"));
-            Image image = new Image(texture);
-            gridTable.add(image);
+        // Llenar la grilla con 12 niveles numerados
+        for (int i = 1; i <= pantallas.size(); i++) {
+            final int nivel = i; // Necesario para usar en el listener
+            Label levelLabel = new Label(String.valueOf(i), labelStyle);
+            levelLabel.setFontScale(2);
 
+            // Crear botón para cada nivel
+            Button levelButton = new Button(skin);
+            levelButton.add(levelLabel).center();
+            levelButton.addListener(new ClickListener() {
+                @Override
+                public void clicked(InputEvent event, float x, float y) {
+                    Settings.setPuzzleSize(nivel+1);
+                    ((PantallaNivelAArmarScreen)Pantallas.ROMPECABEZAIMAGEN.getPantalla()).setImageTexture(pantallas.get(nivel-1));
+                    principal.setScreen(Pantallas.ROMPECABEZAIMAGEN.getPantalla());
+                    // principal.setScreen(new PantallaNivel(principal, nivel));
+                }
+            });
+
+            gridTable.add(levelButton);
+
+            // Nueva fila después de cada 3 niveles
             if (i % 3 == 0) {
-                gridTable.row(); // Nueva fila después de 3 elementos
+                gridTable.row();
             }
-        }*/
-
-        Image juegoBusqueda = new Image(new Texture(Gdx.files.internal("raton_pelota.jpeg")));
-        juegoBusqueda.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                principal.setTipo(tipoanimal);
-                principal.setScreen(new PantallaJuego(principal));
-
-            }
-        });
-        gridTable.add(juegoBusqueda);
-        Image juegoRompecabezas = new Image(new Texture(Gdx.files.internal("rompecabezas.jpeg")));
-        juegoRompecabezas.addListener(new ClickListener() {
-            @Override
-            public void clicked(InputEvent event, float x, float y) {
-                principal.setScreen(new PlayingScreen(principal));
-
-            }
-        });
-        gridTable.add(juegoRompecabezas);
-
-        if (gridTable.getColumns() % 3 == 0) {
-            gridTable.row(); // Nueva fila después de 3 elementos
         }
 
         // Crear el ScrollPane para la grilla
         scrollPane = new ScrollPane(gridTable, skin);
         scrollPane.setScrollingDisabled(true, false); // Solo desplazamiento vertical
-        scrollPane.setForceScroll(false, true); // Fuerza siempre el scroll vertical
-        scrollPane.setScrollBarPositions(false, true); // Barra de desplazamiento siempre visible
+        scrollPane.setForceScroll(false, true);
+        scrollPane.setScrollBarPositions(false, true);
 
-        mainTable.add(scrollPane).expand().fill().colspan(2);
+        mainTable.add(scrollPane).expand().fill();
 
         // Añadir la tabla principal al escenario
         stage.addActor(mainTable);
@@ -117,7 +110,7 @@ public class NivelesRompeCabezas extends BaseScreen {
 
     @Override
     public void render(float delta) {
-        Gdx.gl.glClearColor(1, 0, 0, 1);
+        Gdx.gl.glClearColor(0.1f, 0.1f, 0.1f, 1);
         Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
         stage.act(delta);
         stage.draw();
@@ -132,13 +125,5 @@ public class NivelesRompeCabezas extends BaseScreen {
     @Override
     public void resize(int width, int height) {
         stage.getViewport().update(width, height, true);
-    }
-
-    public void setMusica(Music musica) {
-        this.musica = musica;
-    }
-
-    public Music getMusica() {
-        return musica;
     }
 }

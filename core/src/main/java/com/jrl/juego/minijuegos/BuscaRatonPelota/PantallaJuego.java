@@ -12,6 +12,7 @@ import com.badlogic.gdx.scenes.scene2d.utils.ClickListener;
 import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.viewport.StretchViewport;
 import com.jrl.juego.BaseScreen;
+import com.jrl.juego.Pantallas;
 import com.jrl.juego.Principal;
 
 public class PantallaJuego extends BaseScreen {
@@ -22,7 +23,6 @@ public class PantallaJuego extends BaseScreen {
     private final BitmapFont customFont;
 
     public PantallaJuego(Principal principal) {
-        super(principal);
         stage = new Stage(new StretchViewport(800, 900));
         skin = new Skin(Gdx.files.internal("skin/uskin.json"));
 
@@ -35,7 +35,7 @@ public class PantallaJuego extends BaseScreen {
         labelStyle.fontColor = Color.WHITE;
 
         String texto = "";
-        if (principal.getTipo().equals("gato")) {
+        if (principal.getJugador().getMascota().getTipo().equals("gato")) {
             texto = "Tu abuela diviso un ratón en\nlas inmediaciones,\n ayúdala a encontrarlo\n en los lugares ocultos\n para poder llevarlo\n a otro lado.";
         } else {
             texto = "Tu abuela perdió una pelota,\n ayúdala a buscarla.";
@@ -66,7 +66,7 @@ public class PantallaJuego extends BaseScreen {
             @Override
             public void clicked(InputEvent event, float x, float y) {
                 // Acción al presionar el botón Continuar
-                principal.setScreen(new JuegoBuscaRatonPelotaScreen(principal));
+                principal.setScreen(Pantallas.JUEGOBUSCARATONPELOTA.getPantalla());
             }
         });
 
