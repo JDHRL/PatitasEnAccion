@@ -194,7 +194,9 @@ render.experimental.xml
 
 # Google Services (e.g. APIs or Firebase)
 google-services.json
-
+#Archivos
+assets/modeloLBPH.xml
+Proyecto de grado.zip
 # Android Profiling
 *.hprof
 >>>>>>> patitas_en_accion/main
