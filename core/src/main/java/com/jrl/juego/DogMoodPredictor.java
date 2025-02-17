@@ -27,9 +27,9 @@ public class DogMoodPredictor {
     private static final int MAX_HISTORY_SIZE = 5; // Número de estados anteriores a considerar
     private static final double MAX_SALUD_VALUE =100 ;
     private static final double MAX_ENERGIA_VALUE =100 ;
-    private static final double MAX_VACUNA_VALUE =4 ;
+    private static final double MAX_VACUNA_VALUE =3 ;
 
-    private static final double MAX_ESTADO_VALUE = 4; // Máximo valor de salida (estado)
+    private static final double MAX_ESTADO_VALUE = 6; // Máximo valor de salida (estado)
 
     // Constructor que crea y entrena la red
     public DogMoodPredictor() {
@@ -53,11 +53,12 @@ public class DogMoodPredictor {
     private MLDataSet generateTrainingData() {
         // Aquí irían tus datos de entrenamiento inicial
         double[][] input = {
-            {20, 100, 1}, {80, 60, 2}
+            {100, 100, 3}, {80, 80, 3}, {50, 60, 2}, {40, 50, 1},
+            {30, 40, 1}, {20, 30, 0}, {10, 10, 0}, {0, 0, 0}
         };
 
         double[][] output = {
-            {1}, {2}
+            {1}, {1}, {2}, {3}, {4}, {5}, {5}, {6}
         };
 
         // Normalizar los datos de entrada

@@ -2,6 +2,7 @@ package com.jrl.juego;
 
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Texture;
@@ -9,9 +10,11 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.jrl.juego.entidades.Alimento;
 import com.jrl.juego.entidades.Jugador;
 import com.jrl.juego.entidades.Medicina;
+import com.jrl.juego.entidades.Notificacion;
 import com.jrl.juego.guardado.GuardadoObjeto;
 import org.bytedeco.javacpp.Loader;
 import org.bytedeco.opencv.opencv_java;
+import org.opencv.osgi.OpenCVNativeLoader;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -25,10 +28,12 @@ public class Principal extends Game {
     private Jugador jugador;
     private ArrayList<Alimento>alimentostienda;
     private ArrayList<Medicina>medicinastienda;
+    Notificacion notificacion;
 
 
     public Principal(){
-        System.out.println("segundo"+System.getProperty("java.library.path"));
+        Loader.load(opencv_java.class);
+
         alimentostienda=new ArrayList<>();
 
         alimentostienda.add(new Alimento("croquetas","Alimento poco saludable con\nquimicos recomendable dar poco",1,6, "alimentos/croquetas.png", 100,1));
@@ -46,6 +51,7 @@ public class Principal extends Game {
 
 
     }
+
     @Override
     public void create() {
         for(Pantallas pantalla:Pantallas.values())
@@ -53,6 +59,8 @@ public class Principal extends Game {
             pantalla.setPrincipal(this);
         }
 
+        //notificacion.notificar("hola");
+        //notificacion.notificar("holi");
         GuardadoObjeto<Jugador>  guardado=new GuardadoObjeto<>(Jugador.class);
 
         jugador=guardado.cargar(Jugador.class);
@@ -76,15 +84,14 @@ public class Principal extends Game {
         musicas.add(musicatienda);
         FileHandle fileHandle = Gdx.files.local("tipo.txt");
         String tipo=readTextFile("tipo.txt");
-        if(!fileHandle.exists()) {
-            setScreen(Pantallas.MENUJUEGO.getPantalla());
+        this.jugador.getMascota().setTipo(tipo);
+        if(fileHandle.exists()){
+        setScreen(Pantallas.MENUINGRESO.getPantalla());
         }
         else{
-            this.jugador.getMascota().setTipo(tipo);
-
-            setScreen(Pantallas.MENUINTERACCION.getPantalla());
-
+           setScreen(Pantallas.MENUJUEGO.getPantalla());
         }
+
 
     }
 
@@ -154,5 +161,17 @@ public class Principal extends Game {
     public void setMedicinastienda(ArrayList<Medicina> medicinastienda) {
         this.medicinastienda = medicinastienda;
     }
+
+    public Notificacion getNotificacion() {
+        return notificacion;
+    }
+
+    public void setNotificacion(Notificacion notificacion) {
+        this.notificacion = notificacion;
+    }
+
+
+
+
 
 }

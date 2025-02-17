@@ -1,5 +1,7 @@
 package com.jrl.juego;
 
+import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.Screen;
 import com.jrl.juego.entidades.Jugador;
 import com.jrl.juego.guardado.GuardadoObjeto;
@@ -16,10 +18,10 @@ public abstract class BaseScreen implements Screen{
     protected Principal principal;
 
     @Override
-    public void show(){}
+    public void show(){   }
 
     @Override
-    public void render(float alpha){}
+    public void render(float alpha){   }
     @Override
     public void resize(int i, int i1){}
     @Override

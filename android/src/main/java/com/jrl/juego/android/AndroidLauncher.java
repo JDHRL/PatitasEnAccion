@@ -26,6 +26,7 @@ public class AndroidLauncher extends AndroidApplication {
             }, 100);
         } else {
             // Los permisos ya fueron otorgados, inicializa el juego
+
             initialize(new Principal(), configuration);
         }
     }
@@ -53,6 +54,7 @@ public class AndroidLauncher extends AndroidApplication {
 
 
 }
+
 /*
 
 package com.jrl.juego.android;

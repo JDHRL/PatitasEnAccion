@@ -1,6 +1,7 @@
 package com.jrl.juego;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -24,6 +25,7 @@ public class CapturaScreen extends BaseScreen {
     private float progress = 0f;
     private String[] emotionName = {"Tristeza", "Felicidad", "Enojo", "Sorpresa"};
     private EmotionCapture emotionCapture;
+    //private Image imagen;
 
     @Override
     public void show() {
@@ -39,7 +41,7 @@ public class CapturaScreen extends BaseScreen {
         enojado = new Texture(Gdx.files.internal("niñoenojado.jpeg"));
         feliz = new Texture(Gdx.files.internal("niñosonriendo.jpeg"));
         asombrado = new Texture(Gdx.files.internal("niñoasombrado.jpeg"));
-
+        //imagen=new Image(new Texture("niñotriste.jpeg"));
         tristeI = new Image(triste);
         tristeI.setFillParent(true);
         enojadoI = new Image(enojado);
@@ -48,6 +50,7 @@ public class CapturaScreen extends BaseScreen {
         felizI.setFillParent(true);
         asombradoI = new Image(asombrado);
         asombradoI.setFillParent(true);
+
 
         // Agregar todos los fondos al stage, pero solo mostrar uno a la vez
         stage.addActor(tristeI);
@@ -95,6 +98,8 @@ public class CapturaScreen extends BaseScreen {
         table.add(progressLabel).padBottom(10);
         table.row();
         table.add(warningTable); // Agregar tabla de advertencia
+        //table.row();
+        //table.add(imagen);
 
         // Agregar tabla y otros elementos al stage
         stage.addActor(table);
@@ -120,10 +125,12 @@ public class CapturaScreen extends BaseScreen {
                     } else {
                         warningLabel.setText("Por favor posiciona tu cara bien");
                     }
+                   // imagen.setDrawable( new Image(emotionCapture.getTextura()).getDrawable());
+
+
                 }catch (Exception es){
 
-
-                        progress+=1;
+                    progress+=1;
 
                 }
 

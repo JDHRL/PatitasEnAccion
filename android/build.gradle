@@ -1,3 +1,4 @@
+
 apply plugin: 'com.android.application'
 
 
@@ -57,7 +58,7 @@ android {
       abiFilters "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
     }
     applicationId 'com.jrl.juego'
-    minSdkVersion 19
+    minSdkVersion 22
     targetSdkVersion 34
     versionCode 1
     versionName "1.0"
@@ -86,6 +87,10 @@ configurations { natives }
 dependencies {
   coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.0.4'
   implementation "com.badlogicgames.gdx:gdx-backend-android:$gdxVersion"
+  //implementation 'com.github.jose-jhr:Library-CameraX:1.0.8'
+
+  //openCv
+  //implementation 'com.github.jose-jhr:openCvAndroidGameBall:1.0.2'
   implementation project(':core')
   //implementation("org.bytedeco:javacv-platform:1.5.10")
   natives "com.badlogicgames.gdx:gdx-platform:$gdxVersion:natives-arm64-v8a"

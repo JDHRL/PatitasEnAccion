@@ -1,6 +1,7 @@
 package com.jrl.juego;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
@@ -73,6 +74,7 @@ public class MenuInteraccionScreen extends BaseScreen {
 
     @Override
     public void show() {
+        Gdx.input.setCatchKey(Input.Keys.BACK, true);
         super.show();
         try {
             emotionRecognition.videoCapture=new VideoCapture(0);
@@ -410,9 +412,12 @@ public class MenuInteraccionScreen extends BaseScreen {
         }else{
             animalButton.setDrawable(new Image(enfermo).getDrawable());
         }
-
+        if (Gdx.input.isKeyJustPressed(Input.Keys.BACK)) {
+            principal.setScreen(Pantallas.MENUSALIDASCREEN.getPantalla()); // Cambiar a la pantalla deseada
+        }
         stage.act(delta);
         stage.draw();
+
     }
 
     @Override

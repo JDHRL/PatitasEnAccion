@@ -1,8 +1,12 @@
 package com.jrl.juego.lwjgl3;
 
+import java.io.File;
+
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
 import com.badlogic.gdx.backends.lwjgl3.Lwjgl3WindowAdapter;
+import com.badlogic.gdx.files.FileHandle;
 import com.jrl.juego.Pantallas;
 import com.jrl.juego.Principal;
 
@@ -17,16 +21,22 @@ public class Lwjgl3Launcher {
 
     private static Lwjgl3Application createApplication() {
         principal=new Principal();
+        principal.setNotificacion(new Notificador());
         return new Lwjgl3Application(principal, getDefaultConfiguration());
     }
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("PatitasEnAcccion");
+         
         configuration.setWindowListener(new Lwjgl3WindowAdapter() {
             @Override
             public boolean closeRequested() {
+                if(!principal.getJugador().getMascota().getTipo().equals("")){
                 principal.setScreen(Pantallas.MENUSALIDASCREEN.getPantalla());
+                }else{
+                    Gdx.app.exit();
+                }
                 return false; // Retorna false para evitar que se cierre
             }
         });

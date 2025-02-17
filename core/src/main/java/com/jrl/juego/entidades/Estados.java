@@ -7,7 +7,9 @@ public enum Estados {
     ENFERMO_PARASITOS("Enfermo de parasitos",2),
     ENFERMO_DE_CLAMIDIA("Enfermo de clamidia",3),
     ENFERMO_DE_PARMOVIRUS("Enfermo de parvovirus",4),
-    ENFERMO_DE_RABIA("Enfermo de rabia",5);
+    ENFERMO_DE_RABIA("Enfermo de rabia",5),
+    MUERTE("Muerte por no cuidado",6);
+    
 
     String estado;
     int indice;

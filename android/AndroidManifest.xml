@@ -13,10 +13,12 @@
       android:fullBackupContent="true"
       android:icon="@drawable/ic_launcher"
       android:isGame="true"
+      android:largeHeap="true"
       android:appCategory="game"
       android:label="@string/app_name"
       tools:ignore="UnusedAttribute"
       android:theme="@style/GdxTheme">
+
     <activity
         android:name="com.jrl.juego.android.AndroidLauncher"
         android:label="@string/app_name"

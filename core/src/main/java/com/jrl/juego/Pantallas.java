@@ -23,6 +23,7 @@ public enum Pantallas{
     MENUADMINISTRACIONMEDICINA(new MenuMedicinasAdministrarScreen()),
     CARACTERISTICAS_MASCOTA(new CaracteristicasScreen()),
     CARACTERISTICAS_OBJETO(new PantallaCaracteristicas()),
+    MENUINGRESO(new MenuIngresoScreen()),
     MENUSALIDASCREEN(new MenuSalirScreen());
 
 

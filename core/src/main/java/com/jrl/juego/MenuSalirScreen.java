@@ -26,7 +26,6 @@ public class MenuSalirScreen extends BaseScreen {
 
     @Override
     public void show() {
-        super.show();
 
         // Cargar el skin
         skin = new Skin(Gdx.files.internal("skin/uskin.json"));
@@ -67,10 +66,12 @@ public class MenuSalirScreen extends BaseScreen {
                     try {
                         // Guardar la contraseña en el archivo "contraseña.dsk"
                         saveTextToFile(contrasenaField.getText(), "contraseña.dsk");
-                        contrasenaGuardada = true;
                         Gdx.app.log("Contraseña", "Contraseña guardada correctamente.");
-                        table.add(botonSalir).width(200).height(50).padBottom(20); // Botón para salir
-                        table.row();
+                        if(!contrasenaGuardada) {
+                            table.add(botonSalir).width(200).height(50).padBottom(20); // Botón para salir
+                            table.row();
+                        }
+                        contrasenaGuardada = true;
                     } catch (IOException e) {
                         e.printStackTrace();
                     }

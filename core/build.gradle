@@ -6,8 +6,8 @@ dependencies {
   api "com.kotcrab.vis:vis-ui:$visUiVersion"
   //javacv
   implementation("org.bytedeco:javacv-platform:1.5.10")
-   implementation "org.bytedeco:opencv:4.5.5-1.5.10"
-    implementation "org.bytedeco:openblas:0.3.19-1.5.10"
+   implementation ("org.bytedeco:opencv:4.5.5-1.5.10")
+    implementation ("org.bytedeco:openblas:0.3.19-1.5.10")
   //Encog
   implementation ('org.encog:encog-core:3.4')
 
