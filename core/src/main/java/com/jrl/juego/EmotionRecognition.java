@@ -44,6 +44,22 @@ public class EmotionRecognition {
         }
         return image;
     }
+    public void inicializar_capturador(){
+        try {
+            this.videoCapture = new VideoCapture(1); // Intentar inicializar la cámara 1
+            if (!videoCapture.isOpened()) {
+                throw new Exception("No se pudo abrir la cámara 1");
+            }
+        } catch (Exception e) {
+            System.out.println("Error al abrir la cámara 1: " + e.getMessage());
+            System.out.println("Probando con la cámara 0...");
+            this.videoCapture = new VideoCapture(0); // Intentar con la cámara 0
+            if (!videoCapture.isOpened()) {
+                System.out.println("Error al abrir la cámara 0.");
+            } else {
+                System.out.println("Cámara 0 abierta con éxito.");
+            }
+        }    }
 
     public void setup() {
         try {

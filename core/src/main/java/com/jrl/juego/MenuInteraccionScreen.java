@@ -50,7 +50,7 @@ public class MenuInteraccionScreen extends BaseScreen {
     private float juegosPosX = 0;
     private float juegosPosY = 350;
 
-    private ProgressBar progressBar;
+    //private ProgressBar progressBar;
     private Skin skin; // Declara la variable skin
     private DogMoodPredictor predictor;
     private EmotionRecognition emotionRecognition;
@@ -76,12 +76,7 @@ public class MenuInteraccionScreen extends BaseScreen {
     public void show() {
         Gdx.input.setCatchKey(Input.Keys.BACK, true);
         super.show();
-        try {
-            emotionRecognition.videoCapture=new VideoCapture(0);
-
-        }catch (Exception es){
-
-        }
+       emotionRecognition.inicializar_capturador();
         principal.reproducirMusica(0);
 
         energia100=new Image(new Texture(Gdx.files.internal("energia/posion_100_porciento.png")));
@@ -241,7 +236,7 @@ public class MenuInteraccionScreen extends BaseScreen {
         table.row();
         table.add(animalButton).padBottom(10);
         table.row();
-        table.add(progressBar).padBottom(50); // Agrega la barra de progreso
+       // table.add(progressBar).padBottom(50); // Agrega la barra de progreso
 
         stage.addActor(fondoImage);
         stage.addActor(juegosButton);

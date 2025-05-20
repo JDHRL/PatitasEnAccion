@@ -220,7 +220,6 @@ public class EmotionCapture {
 
 
 
-
     public Texture pixmapToTexture(Pixmap pixmap) {
         return new Texture(pixmap);
     }
