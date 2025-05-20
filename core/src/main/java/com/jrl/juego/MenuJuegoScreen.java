@@ -3,11 +3,13 @@ package com.jrl.juego;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.scenes.scene2d.InputEvent;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Image;
+import com.badlogic.gdx.scenes.scene2d.ui.Label;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
 import com.badlogic.gdx.scenes.scene2d.ui.TextButton;
 import com.badlogic.gdx.scenes.scene2d.ui.TextField;
@@ -26,7 +28,7 @@ public class MenuJuegoScreen extends BaseScreen {
     Image backgroundImage;
     boolean sonidoEncendido = true;
     TextField nombreJugador;  // Campo de texto para el nombre del jugador
-
+    Label avisoNombreVacio;
 
 
     @Override
@@ -34,7 +36,13 @@ public class MenuJuegoScreen extends BaseScreen {
         super.show();
         // Cargar skin
         skin = new Skin(Gdx.files.internal("skin/uskin.json"));
-
+        avisoNombreVacio = new Label("Nombre vacio por favor ingrese un nombre", skin);
+        //avisoNombreVacio.setVisible(false);
+        avisoNombreVacio.setColor(Color.RED);
+        Table warningTable = new Table();
+        warningTable.setBackground((new Skin(Gdx.files.internal("ui/uiskin.json"))).newDrawable("black", Color.WHITE)); // Fondo negro
+        warningTable.add(avisoNombreVacio).pad(10);
+        warningTable.setVisible(false);
         // Crear el campo de texto para el nombre del jugador
         nombreJugador = new TextField("", skin);
         nombreJugador.setMessageText("Nombre del jugador");  // Texto por defecto cuando está vacío
@@ -62,7 +70,8 @@ public class MenuJuegoScreen extends BaseScreen {
         table.row();  // Nueva fila
         table.add(botonStart).width(200).height(50).padBottom(20);  // Tamaño del botón Start
         table.row();  // Nueva fila
-
+        table.add(warningTable).padBottom(20);
+        table.row();
         // Escalar el botón de sonido a un tamaño más pequeño (por ejemplo, 50x50)
         botonSonido.setSize(50, 50);  // Tamaño del botón de sonido
 
@@ -90,6 +99,13 @@ public class MenuJuegoScreen extends BaseScreen {
         botonStart.addListener(new ClickListener() {
             @Override
             public void clicked(InputEvent event, float x, float y) {
+                String nombre = nombreJugador.getText().trim();
+                if (nombre.isEmpty()) {
+                    warningTable.setVisible(true);
+                    return;  // no continuar si está vacío
+                } else {
+                    warningTable.setVisible(false);
+                }
                 try {
                     saveTextToFile(nombreJugador.getText(),"name.txt");
                 } catch (IOException e) {

@@ -41,4 +41,5 @@ For example, `core:clean` removes `build` folder only from the `core` project.
 =======
 # Patitas_En_Accion
 Juego con inferencia mediante reglas
+uso de shadowjar para poder compilar los jars completos
 >>>>>>> patitas_en_accion/main

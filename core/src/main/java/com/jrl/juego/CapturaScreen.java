@@ -25,7 +25,7 @@ public class CapturaScreen extends BaseScreen {
     private float progress = 0f;
     private String[] emotionName = {"Tristeza", "Felicidad", "Enojo", "Sorpresa"};
     private EmotionCapture emotionCapture;
-    //private Image imagen;
+    private Image imagen;
 
     @Override
     public void show() {
@@ -41,7 +41,7 @@ public class CapturaScreen extends BaseScreen {
         enojado = new Texture(Gdx.files.internal("niñoenojado.jpeg"));
         feliz = new Texture(Gdx.files.internal("niñosonriendo.jpeg"));
         asombrado = new Texture(Gdx.files.internal("niñoasombrado.jpeg"));
-        //imagen=new Image(new Texture("niñotriste.jpeg"));
+        imagen=new Image(triste);
         tristeI = new Image(triste);
         tristeI.setFillParent(true);
         enojadoI = new Image(enojado);
@@ -98,8 +98,9 @@ public class CapturaScreen extends BaseScreen {
         table.add(progressLabel).padBottom(10);
         table.row();
         table.add(warningTable); // Agregar tabla de advertencia
-        //table.row();
-        //table.add(imagen);
+        table.row();
+        table.add(imagen);
+
 
         // Agregar tabla y otros elementos al stage
         stage.addActor(table);
@@ -118,6 +119,8 @@ public class CapturaScreen extends BaseScreen {
 
                 progressBar.setValue(progress);
                 progressLabel.setText("Progreso: " + (int) progress + "%");
+                emotionCapture.setHeight((int)imagen.getHeight());
+                emotionCapture.setWidth((int)imagen.getWidth());
                 try {
                     if (emotionCapture.captureEmotions(emotionName[n])) {
                         progress += 1;
@@ -125,11 +128,11 @@ public class CapturaScreen extends BaseScreen {
                     } else {
                         warningLabel.setText("Por favor posiciona tu cara bien");
                     }
-                   // imagen.setDrawable( new Image(emotionCapture.getTextura()).getDrawable());
+                    imagen.setDrawable( new Image(emotionCapture.getTextura()).getDrawable());
 
 
                 }catch (Exception es){
-
+                    es.printStackTrace();
                     progress+=1;
 
                 }

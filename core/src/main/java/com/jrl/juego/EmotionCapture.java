@@ -24,6 +24,8 @@ public class EmotionCapture {
     private VideoCapture cap;
     private CascadeClassifier faceClassif;
     private int count = 0;
+    private int width;
+    private int height;
 
     public EmotionCapture(String dataPath) {
         this.dataPath = dataPath;
@@ -112,12 +114,15 @@ public class EmotionCapture {
 
         // Llama a detectMultiScale con todos los parámetros requeridos
         faceClassif.detectMultiScale(gray, faces, 1.3, 5, 0, minSize, maxSize); // Detecta caras
-
+        boolean detected=false;
         for (int i = 0; i < faces.size(); i++) {
             Rect face = faces.get(i);
             opencv_imgproc.rectangle(resizedFrame, new Point(face.x(), face.y()),
                 new Point(face.x() + face.width(), face.y() + face.height()),
                 new Scalar(0, 255, 0, 0), 2, 8, 0); // Dibuja rectángulo alrededor de la cara
+            opencv_imgproc.rectangle(frame, new Point(face.x(), face.y()),
+                new Point(face.x() + face.width(), face.y() + face.height()),
+                new Scalar(0, 255, 0, 0), 2, 8, 0);
 
             Mat rostro = new Mat(resizedFrame, face); // Recorta la cara
             Mat resizedRostro = new Mat();
@@ -128,7 +133,8 @@ public class EmotionCapture {
                 String filePath = emotionsPath + "/rostro_" + count + ".jpg";
                 imwrite(filePath, resizedRostro);
                 count++;
-
+                matToLibGDXTexture(frame);
+                detected=true;
                 return true;
             } catch (Exception e) {
                 System.out.println("Error al guardar la imagen: " + e.getMessage());
@@ -136,6 +142,11 @@ public class EmotionCapture {
             /*rostro.release();
             resizedRostro.release();*/
         }
+        if(!detected) {
+            matToLibGDXTexture(frame);
+        }
+
+
         /*
         faces.clear();
         resizedFrame.release();
@@ -143,44 +154,72 @@ public class EmotionCapture {
         gray.release();*/
         return false;
     }
-    public Pixmap matToPixmap(Mat mat) {
-        // Asegurarse de que la imagen esté en formato RGBA (4 canales)
+
+    /*public Pixmap matToPixmap(Mat mat) {
         if (mat.channels() != 4) {
             Mat rgbaMat = new Mat();
-            cvtColor(mat, rgbaMat, COLOR_BGR2BGRA);  // Convierte BGR a RGBA
+            cvtColor(mat, rgbaMat, COLOR_BGR2BGRA);  // Convertir BGR a BGRA
             mat = rgbaMat;
         }
 
         int width = mat.cols();
-        int height = mat.rows();
-
-        // Crear un Pixmap para almacenar la imagen convertida
+        //int height = mat.rows();
+        //int width=100;
+        int height=400;
         Pixmap pixmap = new Pixmap(width, height, Pixmap.Format.RGBA8888);
 
-        // Obtener los datos de la imagen
-        byte[] data = new byte[width * height * 4];  // RGBA (4 bytes por píxel)
-        mat.data().get(data);  // Llenar el array con los datos de la imagen
+        byte[] data = new byte[width * height * 4];
+        mat.data().get(data);
 
-        // Copiar los píxeles del Mat al Pixmap
         int index = 0;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                // Obtener el valor RGBA
-                int r = data[index++] & 0xFF;  // Rojo
-                int g = data[index++] & 0xFF;  // Verde
-                int b = data[index++] & 0xFF;  // Azul
-                int a = data[index++] & 0xFF;  // Alfa
+                int r = data[index++] & 0xFF;
+                int g = data[index++] & 0xFF;
+                int b = data[index++] & 0xFF;
+                int a = data[index++] & 0xFF;
 
-                // Construir el valor del píxel (RGBA)
-                int pixel = (a ) | (r ) | (g) | b;
-
-                // Asignar el píxel al Pixmap
-                pixmap.drawPixel(x, height - y - 1, pixel);  // Invertir eje Y para coincidir con LibGDX
+                int pixel = (r << 24) | (g << 16) | (b << 8) | a;
+                pixmap.drawPixel(x, y , pixel);
             }
         }
 
         return pixmap;
+    }*/
+    public Pixmap matToPixmap(Mat bgr) {
+        // ── 1. BGR → RGBA ───────────────────────────────────
+        Mat rgba = new Mat();
+        cvtColor(bgr, rgba, opencv_imgproc.COLOR_BGR2RGBA);
+
+        int w = rgba.cols();
+        int h = 400;       // usa la altura real
+        Pixmap pix = new Pixmap(w, h, Pixmap.Format.RGBA8888);
+
+        // ── 2. Obtener los bytes RGBA ───────────────────────
+        byte[] data = new byte[w * h * 4];
+        rgba.data().get(data);
+
+        // ── 3. Copiar invirtiendo X (espejo horizontal) ─────
+        int srcIdx;                // índice en data
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
+                // columna destino = w‑1‑x
+                srcIdx = (y * w + x) * 4;
+                int r = data[srcIdx]     & 0xFF;
+                int g = data[srcIdx + 1] & 0xFF;
+                int b = data[srcIdx + 2] & 0xFF;
+                int a = data[srcIdx + 3] & 0xFF;
+
+                // empaquetar en RGBA8888
+                int pixel = (r << 24) | (g << 16) | (b << 8) | a;
+                pix.drawPixel(w - 1 - x, y, pixel);  // ← espejo
+            }
+        }
+        return pix;
     }
+
+
+
 
     public Texture pixmapToTexture(Pixmap pixmap) {
         return new Texture(pixmap);
@@ -192,8 +231,10 @@ public class EmotionCapture {
     }
 
     public void matToLibGDXTexture(Mat mat) {
+        if(textura!=null){textura.dispose();}
         Pixmap pixmap = matToPixmap(mat);
         textura=pixmapToTexture(pixmap);
+
     }
 
     // Función auxiliar para escribir imágenes
@@ -205,5 +246,21 @@ public class EmotionCapture {
     // Método para liberar la cámara cuando ya no se necesite capturar más
     public void release() {
         cap.release();
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
     }
 }

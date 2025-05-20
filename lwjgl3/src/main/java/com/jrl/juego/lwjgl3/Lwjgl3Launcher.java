@@ -21,14 +21,14 @@ public class Lwjgl3Launcher {
 
     private static Lwjgl3Application createApplication() {
         principal=new Principal();
-        principal.setNotificacion(new Notificador());
+        //principal.setNotificacion(new Notificador());
         return new Lwjgl3Application(principal, getDefaultConfiguration());
     }
 
     private static Lwjgl3ApplicationConfiguration getDefaultConfiguration() {
         Lwjgl3ApplicationConfiguration configuration = new Lwjgl3ApplicationConfiguration();
         configuration.setTitle("PatitasEnAcccion");
-         
+
         configuration.setWindowListener(new Lwjgl3WindowAdapter() {
             @Override
             public boolean closeRequested() {

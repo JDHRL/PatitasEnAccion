@@ -9,11 +9,16 @@ import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 import com.jrl.juego.Principal;
 
 public class AndroidLauncher extends AndroidApplication {
+    Principal principal;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         AndroidApplicationConfiguration configuration = new AndroidApplicationConfiguration();
         configuration.useImmersiveMode = true; // Recommended, but not required.
+        principal=new Principal();
+       // NotificacionAndroid notificacion=new NotificacionAndroid();
+       // notificacion.setContext(this);
+       // principal.setNotificacion(notificacion);
 
         // Verificar y solicitar permisos antes de inicializar el juego
         if (checkSelfPermission(Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED ||
@@ -27,7 +32,7 @@ public class AndroidLauncher extends AndroidApplication {
         } else {
             // Los permisos ya fueron otorgados, inicializa el juego
 
-            initialize(new Principal(), configuration);
+            initialize(principal, configuration);
         }
     }
 
@@ -44,7 +49,8 @@ public class AndroidLauncher extends AndroidApplication {
             }
             if (permisosOtorgados) {
                 // Permisos otorgados, inicializa el juego
-                initialize(new Principal(), new AndroidApplicationConfiguration());
+
+                initialize(principal, new AndroidApplicationConfiguration());
             } else {
                 // Permisos denegados, maneja la denegación
                 finish(); // Cierra la actividad y sale de la aplicación
